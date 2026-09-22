@@ -1,34 +1,32 @@
 import os
 import io
 import zipfile
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, send_file, send_from_directory
 from PIL import Image, ImageDraw, ImageFont, ImageCms
 
 app = Flask(__name__)
 
-# Diretórios do seu projeto
-PASTA_IMAGENS = r"C:\Users\sam\Documents\Certika\image"
-FONTE_PADRAO = r"C:\Users\sam\Documents\Certika\fonts\Syne\static\Syne-Bold.ttf"
+# Configura caminhos relativos para funcionar no Windows e no Render/Linux
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PASTA_IMAGENS = os.path.join(BASE_DIR, "image")
+FONTE_PADRAO = os.path.join(BASE_DIR, "fonts", "Syne", "static", "Syne-Bold.ttf")
+
+# Rota para servir as imagens do modelo para o Live Preview do front-end
+@app.route('/image/<filename>')
+def serve_image(filename):
+    return send_from_directory(PASTA_IMAGENS, filename)
 
 def converter_para_cmyk_icc(imagem_pil):
     """
     Converte uma imagem PIL RGB para CMYK utilizando o perfil ICC padrão da indústria.
-    Isso alinha a fidelidade de cor com softwares como Canva, Photoshop e InDesign.
     """
-    # Se a imagem já estiver no formato correto, retorna sem alterar
     if imagem_pil.mode == 'CMYK':
         return imagem_pil
 
-    # Garante que a imagem está em RGB antes de aplicar o perfil ICC
     if imagem_pil.mode != 'RGB':
         imagem_pil = imagem_pil.convert('RGB')
 
-    # Define os perfis de cor padrão de entrada e saída
     perfil_srgb = ImageCms.createProfile("sRGB")
-    
-    # Criamos um perfil genérico CMYK utilizando o motor LittleCMS do Pillow
-    # Caso sua gráfica exija um perfil específico (ex: FOGRA39.icc ou USWebCoatedSWOP.icc),
-    # você pode carregá-lo via: ImageCms.getOpenProfile("caminho/para/perfil.icc")
     perfil_cmyk = ImageCms.createProfile("sRGB") 
 
     try:
@@ -40,7 +38,6 @@ def converter_para_cmyk_icc(imagem_pil):
         )
         return ImageCms.applyTransform(imagem_pil, transformacao)
     except Exception:
-        # Fallback para conversão padrão caso ocorra algum erro na lib de CMS
         return imagem_pil.convert('CMYK')
 
 
@@ -54,12 +51,9 @@ def index():
         nomes_raw = request.form.get('nomes', '')
         lista_nomes = [n.strip() for n in nomes_raw.split('\n') if n.strip()]
         
-        # Padrão de caixa do texto (upper, title ou original)
         formato_nome = request.form.get('formato_nome', 'original')
-
         font_size = int(request.form.get('font_size', 60))
         pos_y_factor = float(request.form.get('pos_y_factor', 2.5))
-        
         modo_cor = request.form.get('modo_cor', 'RGB')
         
         cor_hex = request.form.get('cor_hex', '#000000').lstrip('#')
@@ -83,13 +77,11 @@ def index():
         zip_buffer = io.BytesIO()
         with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
             for nome in lista_nomes:
-                # Aplicação da padronização do nome escolhida pelo usuário
                 if formato_nome == 'upper':
                     nome = nome.upper()
                 elif formato_nome == 'title':
                     nome = nome.title()
 
-                # Processamos sempre em RGB para desenhar o texto com precisão de fonte
                 img = img_modelo.copy().convert('RGB')
                 draw = ImageDraw.Draw(img)
 
@@ -100,10 +92,8 @@ def index():
                 pos_x = (img.width - text_width) / 2
                 pos_y = (img.height - text_height) / pos_y_factor
 
-                # Desenha o texto usando a cor em RGB
                 draw.text((pos_x, pos_y), nome, fill=rgb_color, font=font)
 
-                # Se o perfil selecionado for CMYK, realiza a conversão de perfis e ajusta a resolução para 300 DPI
                 if modo_cor == 'CMYK':
                     img = converter_para_cmyk_icc(img)
                     resolucao_pdf = 300.0
