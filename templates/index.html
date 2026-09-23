@@ -155,36 +155,100 @@
 
                     <div class="card-divider"></div>
 
-
                     <div class="card-header">
                         <span class="step-number">04</span>
-                        <h2>Participantes</h2>
+                        <h2>Participantes & Destino</h2>
                     </div>
 
-                    <div class="input-block">
-                        <div class="label-row"
-                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                            <label class="field-label" style="margin-bottom: 0;">Cole a lista de nomes (um por
-                                linha)</label>
-                            <span id="counterBadge" class="badge-count">0 certificados</span>
-                        </div>
-                        <textarea name="nomes" id="textarea_nomes" rows="8" class="custom-textarea"
-                            placeholder="Nome Completo da Silva&#10;Nome Completo Cavalcanti&#10;Nome Completo Soares"
-                            onkeydown="if(event.key === 'Enter') event.stopPropagation();" required></textarea>
+                    <!-- Seção de Entrada de Participantes (Estilo Toggle Consistente) -->
+                    <div class="input-section-container mb-4">
+                        <label class="field-label" style="margin-bottom: 8px; display: block;">Método de Entrada</label>
 
-                        <!-- Painel de Validação e Limpeza -->
-                        <!-- Painel de Validação e Limpeza -->
-                        <div class="validation-toolbar"
-                            style="display: flex; gap: 8px; margin-top: 8px; justify-content: space-between; align-items: center;">
-                            <button type="button" class="btn-secondary" style="font-size: 0.8rem; padding: 6px 12px;"
-                                onclick="limparEValidarLista()">
-                                Validar dados
-                            </button>
-                            <span id="validationMsg" class="validation-msg"
-                                style="font-size: 0.8rem; font-weight: 500;"></span>
+                        <div class="toggle-group" style="margin-bottom: 16px;">
+                            <label class="toggle-btn active" id="lbl-manual">
+                                <input type="radio" name="tipo_entrada_aba" value="manual" checked
+                                    onclick="alternarEntrada('manual')" style="display: none;">
+                                📝 Digitar Manualmente
+                            </label>
+                            <label class="toggle-btn" id="lbl-csv">
+                                <input type="radio" name="tipo_entrada_aba" value="csv" onclick="alternarEntrada('csv')"
+                                    style="display: none;">
+                                📁 Importar Planilha CSV
+                            </label>
+                        </div>
+
+                        <!-- Bloco 1: Entrada Manual -->
+                        <div id="bloco_manual" class="entrada-bloco">
+                            <div class="label-row"
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <label class="field-label" style="margin-bottom: 0;">Cole a lista de nomes (um por
+                                    linha)</label>
+                                <span id="counterBadge" class="badge-count">0 certificados</span>
+                            </div>
+                            <textarea name="nomes" id="textarea_nomes" rows="6" class="custom-textarea"
+                                placeholder="Nome Completo da Silva&#10;Nome Completo Cavalcanti&#10;Nome Completo Soares"
+                                onkeydown="if(event.key === 'Enter') event.stopPropagation();"></textarea>
+
+                            <!-- Painel de Validação e Limpeza -->
+                            <div class="validation-toolbar"
+                                style="display: flex; gap: 8px; margin-top: 8px; justify-content: space-between; align-items: center;">
+                                <button type="button" class="btn-secondary"
+                                    style="font-size: 0.8rem; padding: 6px 12px;" onclick="limparEValidarLista()">
+                                    Validar dados
+                                </button>
+                                <span id="validationMsg" class="validation-msg"
+                                    style="font-size: 0.8rem; font-weight: 500;"></span>
+                            </div>
+                        </div>
+
+                        <!-- Bloco 2: Upload de CSV -->
+                        <div id="bloco_csv" class="entrada-bloco" style="display: none;">
+                            <label class="field-label">Envie arquivo .CSV (Mapeamento inteligente)</label>
+                            <input type="file" name="csv_file" id="csv_file" accept=".csv" class="custom-file"
+                                style="margin-top: 6px;">
+                            <div class="form-text text-muted" style="font-size: 0.8rem; color: #aaa; margin-top: 6px;">
+                                O sistema detetará automaticamente as colunas de Nome e E-mail.
+                            </div>
                         </div>
                     </div>
 
+                    <!-- Bloco de Configuração de E-mail Atualizado -->
+                    <div style="margin: 20px 0; padding: 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; color: #1e293b; font-size: 0.95rem;">
+                            <input type="checkbox" id="enviar_emails" name="enviar_emails"
+                                onchange="toggleEmailConfig(this)" style="width: 18px; height: 18px; cursor: pointer;">
+                            Enviar certificados automaticamente por e-mail
+                        </label>
+
+                        <div id="campos_smtp" style="display: none; margin-top: 14px; flex-direction: column; gap: 10px;">
+                            <input type="email" name="smtp_email" placeholder="O seu e-mail (ex: seuemail@gmail.com)"
+                                style="padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.9rem;">
+                            <input type="password" name="smtp_senha" placeholder="Senha de aplicativo do e-mail"
+                                style="padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.9rem;">
+                            
+                            <!-- Assunto e Mensagem Personalizada -->
+                            <input type="text" name="email_assunto" placeholder="Assunto do E-mail" value="O seu Certificado de Participação"
+                                style="padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.9rem;">
+                            
+                            <textarea name="email_mensagem" placeholder="Mensagem do e-mail. Use {nome} para o nome do participante." rows="3"
+                                style="padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.9rem; font-family: inherit; resize: vertical;">Olá {nome},
+
+Segue em anexo o seu certificado oficial de participação.
+
+Parabéns pelo evento!</textarea>
+
+                            <!-- Botão de Teste -->
+                            <div style="display: flex; gap: 10px; align-items: center; margin-top: 4px;">
+                                <button type="button" id="btnTestarEmail" onclick="dispararEmailTeste()"
+                                    style="background: #475569; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
+                                    ✉️ Enviar E-mail de Teste
+                                </button>
+                                <span id="testeStatus" style="font-size: 0.8rem; font-weight: 500;"></span>
+                            </div>
+
+                            <small style="color: #64748b; font-size: 0.8rem; line-height: 1.4; margin-top: 4px;">💡 Dica: No Gmail, você precisa gerar uma "Senha de Aplicativo" nas definições de segurança.</small>
+                        </div>
+                    </div>
 
                     <button type="submit" id="btnSubmit" class="btn-primary">
                         <span id="btnText">Gerar Pacote ZIP</span>
@@ -209,241 +273,46 @@
         </div>
     </footer>
 
-    <script>
-        // Evita que o usuário envie o formulário acidentalmente ao pressionar Enter dentro do textarea
-        document.getElementById('textarea_nomes').addEventListener('keydown', function (event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                // Deixa o comportamento padrão do textarea (pular linha), 
-                // mas garante que o formulário NÃO seja submetido.
-                event.stopPropagation();
-            }
-        });
+    <!-- Modais e Notificações (Sucesso, Confirmação e Progresso) -->
+    <div id="successModal" class="hidden"
+        style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+        <div
+            style="background: #ffffff; padding: 32px; border-radius: 20px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+            <div style="font-size: 3rem; margin-bottom: 16px;">🎉</div>
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Certificados Gerados!</h3>
+            <p style="font-size: 0.95rem; color: #64748b; margin-bottom: 24px; line-height: 1.5;">O pacote ZIP com os seus certificados foi descarregado com sucesso.</p>
+            <button id="btnRecomecar" class="btn-primary" style="width: 100%; border: none; cursor: pointer;">
+                Gerar Novos Certificados
+            </button>
+        </div>
+    </div>
 
-        function toggleModelo(opcao) {
-            document.getElementById('box-lista').style.display = opcao === 'lista' ? 'block' : 'none';
-            document.getElementById('box-upload').style.display = opcao === 'upload' ? 'block' : 'none';
+    <div id="confirmEmailModal" class="hidden"
+        style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1050;">
+        <div
+            style="background: #ffffff; padding: 32px; border-radius: 20px; max-width: 420px; width: 90%; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+            <div style="font-size: 3rem; margin-bottom: 16px;">📧</div>
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Confirmar Envio em Massa?</h3>
+            <p style="font-size: 0.95rem; color: #64748b; margin-bottom: 24px; line-height: 1.5;">Os certificados serão gerados e enviados por e-mail com a mensagem personalizada. Deseja prosseguir?</p>
+            <div style="display: flex; gap: 10px;">
+                <button id="btnCancelarEnvio" type="button"
+                    style="flex: 1; background: #e2e8f0; color: #334155; border: none; padding: 12px; border-radius: 100px; font-weight: 700; cursor: pointer;">Cancelar</button>
+                <button id="btnConfirmarEnvio" type="button"
+                    style="flex: 1; background: #059669; color: #ffffff; border: none; padding: 12px; border-radius: 100px; font-weight: 700; cursor: pointer;">Sim, Enviar</button>
+            </div>
+        </div>
+    </div>
 
-            if (opcao === 'lista') {
-                document.getElementById('lbl-lista').classList.add('active');
-                document.getElementById('lbl-upload').classList.remove('active');
-            } else {
-                document.getElementById('lbl-upload').classList.add('active');
-                document.getElementById('lbl-lista').classList.remove('active');
-            }
-            carregarImagemModelo();
-        }
+    <div id="emailProgressToast" class="hidden"
+        style="position: fixed; bottom: 24px; right: 24px; background: #0f172a; color: #ffffff; padding: 16px 20px; border-radius: 14px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); display: flex; align-items: center; gap: 12px; z-index: 1100; font-family: 'Plus Jakarta Sans', sans-serif;">
+        <div style="width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #ffffff; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+        <div>
+            <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700;">A processar e enviar...</h4>
+            <p id="progressText" style="margin: 2px 0 0 0; font-size: 0.8rem; color: #94a3b8;">Gerando certificados.</p>
+        </div>
+    </div>
 
-        function toTitleCase(str) {
-            return str.toLowerCase().replace(/(?:^|\s|-)\S/g, function (a) {
-                return a.toUpperCase();
-            });
-        }
-
-        function aplicarFormatacaoNomes() {
-            const textarea = document.getElementById('textarea_nomes');
-            const formato = document.getElementById('formato_nome').value;
-
-            if (!textarea || !textarea.value.trim()) return;
-
-            const linhas = textarea.value.split('\n');
-            const linhasFormatadas = linhas.map(linha => {
-                if (formato === 'upper') return linha.toUpperCase();
-                if (formato === 'title') return toTitleCase(linha);
-                return linha;
-            });
-
-            textarea.value = linhasFormatadas.join('\n');
-            atualizarContador();
-            atualizarPreview();
-        }
-
-        // Validação e Limpeza Inteligente de Nomes
-        function limparEValidarLista() {
-            const textarea = document.getElementById('textarea_nomes');
-            const msgSpan = document.getElementById('validationMsg');
-
-            if (!textarea || !textarea.value.trim()) {
-                msgSpan.className = 'validation-msg error';
-                msgSpan.innerText = 'Nenhum nome inserido.';
-                return;
-            }
-
-            const linhasOriginais = textarea.value.split('\n');
-            let duplicadosEncontrados = 0;
-            let linhasVaziasRemovidas = 0;
-
-            const nomesUnicos = [];
-            const nomesVistos = new Set();
-
-            linhasOriginais.forEach(linha => {
-                // Remove espaços nas pontas e caracteres invisíveis de tabelas/Excel
-                let nomeLimpo = linha.trim().replace(/[\t\r]/g, '').replace(/\s+/g, ' ');
-
-                if (nomeLimpo === '') {
-                    linhasVaziasRemovidas++;
-                    return;
-                }
-
-                const chaveUnica = nomeLimpo.toLowerCase();
-                if (nomesVistos.has(chaveUnica)) {
-                    duplicadosEncontrados++;
-                } else {
-                    nomesVistos.add(chaveUnica);
-                    nomesUnicos.push(nomeLimpo);
-                }
-            });
-
-            textarea.value = nomesUnicos.join('\n');
-            atualizarContador();
-            atualizarPreview();
-
-            // Exibe feedback
-            if (duplicadosEncontrados > 0 || linhasVaziasRemovidas > 0) {
-                msgSpan.className = 'validation-msg warning';
-                let aviso = [];
-                if (duplicadosEncontrados > 0) aviso.push(`${duplicadosEncontrados} duplicado(s) removido(s)`);
-                if (linhasVaziasRemovidas > 0) aviso.push(`${linhasVaziasRemovidas} linha(s) vazia(s) limpa(s)`);
-                msgSpan.innerText = `✓ ${aviso.join(', ')}.`;
-            } else {
-                msgSpan.className = 'validation-msg success';
-                msgSpan.innerText = '✓ Lista válida e sem duplicados!';
-            }
-
-            setTimeout(() => {
-                msgSpan.innerText = '';
-            }, 5000);
-        }
-
-        // Contador de Certificados com detecção prévia de duplicados
-        const textarea = document.getElementById('textarea_nomes');
-        const badge = document.getElementById('counterBadge');
-        const msgSpan = document.getElementById('validationMsg');
-
-        function atualizarContador() {
-            const lines = textarea.value.split('\n').filter(line => line.trim() !== '');
-            const count = lines.length;
-            badge.innerText = `${count} certificado${count === 1 ? '' : 's'}`;
-
-            // Checagem em tempo real de duplicados para alertar discretamente
-            const nomesMinusculos = lines.map(l => l.trim().toLowerCase());
-            const temDuplicado = new Set(nomesMinusculos).size !== nomesMinusculos.length;
-
-            if (temDuplicado && msgSpan && !msgSpan.innerText.includes('removido')) {
-                msgSpan.className = 'validation-msg warning';
-                msgSpan.innerText = '⚠️ Nomes duplicados detectados';
-            } else if (!temDuplicado && msgSpan && msgSpan.innerText.includes('duplicados detectados')) {
-                msgSpan.innerText = '';
-            }
-        }
-
-        textarea.addEventListener('input', () => {
-            atualizarContador();
-            atualizarPreview();
-        });
-
-        // Dynamic Live Preview no Canvas
-        const canvas = document.getElementById('certPreview');
-        const ctx = canvas ? canvas.getContext('2d') : null;
-        const imgModelo = new Image();
-        imgModelo.crossOrigin = "anonymous";
-
-        function carregarImagemModelo() {
-            const radioUpload = document.querySelector('input[name="origem_modelo"][value="upload"]');
-
-            if (radioUpload && radioUpload.checked) {
-                const fileInput = document.querySelector('input[name="file_upload"]');
-                if (fileInput && fileInput.files && fileInput.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        imgModelo.src = e.target.result;
-                    };
-                    reader.readAsDataURL(fileInput.files[0]);
-                    return;
-                }
-            }
-
-            const selectModelo = document.querySelector('select[name="modelo_lista"]');
-            const nomeModelo = selectModelo ? selectModelo.value : '';
-
-            if (nomeModelo) {
-                imgModelo.src = `/image/${nomeModelo}?t=${new Date().getTime()}`;
-            }
-        }
-
-        function atualizarPreview() {
-            if (!canvas || !ctx || !imgModelo.complete || imgModelo.naturalWidth === 0) return;
-
-            canvas.width = imgModelo.naturalWidth;
-            canvas.height = imgModelo.naturalHeight;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(imgModelo, 0, 0);
-
-            const fontSizeInput = document.querySelector('input[name="font_size"]');
-            const posYInput = document.querySelector('input[name="pos_y_factor"]');
-            const colorInput = document.querySelector('input[name="cor_hex"]');
-
-            const fontSize = fontSizeInput ? fontSizeInput.value : 60;
-            const posYFactor = posYInput ? posYInput.value : 2.5;
-            const hexColor = colorInput ? colorInput.value : '#000000';
-
-            const textoExemplo = textarea.value.split('\n').find(l => l.trim() !== '') || 'Nome do Participante Exemplo';
-
-            ctx.font = `bold ${fontSize}px "Plus Jakarta Sans", sans-serif`;
-            ctx.fillStyle = hexColor;
-            ctx.textAlign = 'center';
-
-            const posY = canvas.height / posYFactor;
-            ctx.fillText(textoExemplo, canvas.width / 2, posY);
-        }
-
-        imgModelo.onload = atualizarPreview;
-
-        document.querySelectorAll('input, select, textarea').forEach(element => {
-            element.addEventListener('change', () => {
-                carregarImagemModelo();
-                atualizarPreview();
-            });
-            element.addEventListener('input', atualizarPreview);
-        });
-
-        window.addEventListener('DOMContentLoaded', carregarImagemModelo);
-
-        // Feedback do Botão ao Submeter
-        const form = document.getElementById('certForm');
-        const btnSubmit = document.getElementById('btnSubmit');
-        const btnText = document.getElementById('btnText');
-        const btnIcon = document.getElementById('btnIcon');
-        const btnSpinner = document.getElementById('btnSpinner');
-
-        let timer2s = null;
-
-        function resetarBotaoPadrao() {
-            if (timer2s) clearTimeout(timer2s);
-            if (btnSubmit) {
-                btnSubmit.disabled = false;
-                btnSubmit.classList.remove('btn-loading-state');
-            }
-            if (btnText) btnText.innerText = 'Gerar Pacote ZIP';
-            if (btnIcon) btnIcon.style.display = 'inline';
-            if (btnSpinner) btnSpinner.classList.add('hidden');
-        }
-
-        if (form) {
-            form.addEventListener('submit', () => {
-                if (btnSubmit) {
-                    btnSubmit.disabled = true;
-                    btnSubmit.classList.add('btn-loading-state');
-                }
-                if (btnText) btnText.innerText = 'Processando download...';
-                if (btnIcon) btnIcon.style.display = 'none';
-                if (btnSpinner) btnSpinner.classList.remove('hidden');
-
-                window.addEventListener('focus', resetarBotaoPadrao, { once: true });
-                timer2s = setTimeout(resetarBotaoPadrao, 2000);
-            });
-        }
-    </script>
+    <!-- Ligação para o novo script externo separado -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
-
 </html>

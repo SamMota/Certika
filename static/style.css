@@ -165,26 +165,38 @@ body {
     margin: 28px 0;
 }
 
-/* TOGGLE MODELOS */
+/* TOGGLE MODELOS & ABAS (COM ESPAÇAMENTO ADEQUADO) */
+.input-section-container {
+    margin-bottom: 24px;
+}
+
 .toggle-group {
     display: flex;
     background-color: var(--input-bg);
-    padding: 4px;
-    border-radius: var(--radius-md);
     border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    gap: 4px;
+    width: 100%;
     margin-bottom: 20px;
 }
 
 .toggle-btn {
     flex: 1;
     text-align: center;
-    padding: 10px;
-    font-size: 0.875rem;
+    padding: 10px 14px;
+    font-size: 0.85rem;
     font-weight: 600;
     color: var(--text-secondary);
-    border-radius: var(--radius-sm);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+.toggle-btn:hover {
+    color: var(--text-primary);
 }
 
 .toggle-btn input {
@@ -192,14 +204,20 @@ body {
 }
 
 .toggle-btn.active {
-    background-color: var(--card-bg);
+    background-color: #ffffff;
     color: var(--text-primary);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    border-color: var(--border-color);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
 }
 
-/* FORM FIELDS */
+/* FORM FIELDS & BLOCOS */
 .input-block {
     margin-bottom: 20px;
+}
+
+.entrada-bloco {
+    margin-top: 16px; /* Respiro acima do bloco de conteúdo */
+    transition: all 0.3s ease;
 }
 
 .field-label {
@@ -212,8 +230,7 @@ body {
 
 .custom-select,
 .custom-input,
-.custom-textarea,
-.custom-file {
+.custom-textarea {
     width: 100%;
     padding: 12px 16px;
     background-color: var(--input-bg);
@@ -242,6 +259,25 @@ body {
 .custom-textarea {
     resize: vertical;
     line-height: 1.5;
+}
+
+/* CUSTOM FILE (CSV / UPLOAD) COM ESPAÇAMENTO CONFORTÁVEL */
+.custom-file {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 8px; /* Respiro superior */
+}
+
+.custom-file:hover {
+    border-color: var(--accent-green);
+    background-color: #ffffff;
 }
 
 /* COLOR PICKER */
@@ -295,6 +331,7 @@ body {
     gap: 10px;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
+    margin-top: 16px; /* Respiro antes do botão principal de envio */
 }
 
 .btn-primary:hover {
@@ -306,22 +343,17 @@ body {
     transform: translateY(0);
 }
 
-/* Estado Ativo de Carregamento (Vermelho durante os 2s) */
+/* Estado Ativo de Carregamento */
 .btn-primary.btn-loading-state {
-    background: #ef4444 !important; /* Vermelho enquanto processa */
+    background: #ef4444 !important;
     color: #ffffff !important;
     border-color: #dc2626 !important;
     cursor: wait !important;
 }
 
-.btn-primary.btn-warning-state:hover {
-    background: #dc2626 !important;
-}
-
 .btn-secondary {
     width: 100%;
     height: 45px;
-    /* Mesma altura dos inputs */
     background-color: var(--input-bg);
     color: var(--text-primary);
     border: 1px solid var(--border-color);
@@ -343,25 +375,24 @@ body {
     color: var(--accent-green);
 }
 
-
-
+/* FOOTER */
 .footer {
     margin-top: 60px;
     padding: 24px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid var(--border-color);
     text-align: center;
-    color: #a1a1aa;
+    color: var(--text-secondary);
     font-size: 0.9rem;
 }
 
 .footer strong {
-    color: #f4f4f5;
+    color: var(--text-primary);
 }
 
 .footer a {
-    color: #a855f7;
+    color: var(--accent-green);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .footer a:hover {
@@ -371,21 +402,21 @@ body {
 .footer-sub {
     font-size: 0.8rem;
     margin-top: 4px;
-    opacity: 0.7;
+    opacity: 0.8;
 }
 
 /* Badge de contagem de nomes */
 .badge-count {
-    background: rgba(168, 85, 247, 0.15);
-    color: #a855f7;
-    border: 1px solid rgba(168, 85, 247, 0.3);
+    background: var(--accent-green-light);
+    color: var(--accent-green);
+    border: 1px solid #a7f3d0;
     padding: 2px 10px;
     border-radius: 12px;
     font-size: 0.8rem;
     font-weight: 600;
 }
 
-/* Animação e estilo do spinner */
+/* Spinner */
 .spinner {
     width: 18px;
     height: 18px;
@@ -411,7 +442,7 @@ body {
     width: 100%;
     background: #09090b;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     padding: 12px;
     display: flex;
     justify-content: center;
@@ -429,7 +460,8 @@ body {
 
 /* Estilos de Validação e Limpeza de Nomes */
 .validation-toolbar {
-    margin-top: 8px;
+    margin-top: 12px;
+    margin-bottom: 8px;
 }
 
 .validation-msg {
@@ -439,13 +471,13 @@ body {
 }
 
 .validation-msg.warning {
-    color: #f59e0b; /* Amarelo/Laranja para avisos de duplicados */
+    color: #f59e0b;
 }
 
 .validation-msg.success {
-    color: #10b981; /* Verde para confirmação de limpeza */
+    color: #10b981;
 }
 
 .validation-msg.error {
-    color: #ef4444; /* Vermelho para erro */
+    color: #ef4444;
 }
